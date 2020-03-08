@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Markdown editor</title>
+    <link rel="stylesheet" href="./src/css/style.css" />
+    <link rel="stylesheet" href="./src/css/editormd.css" />
+    <style>
+      body {
+
+            background: #396afc;
+            /* fallback for old browsers */
+            background: -webkit-linear-gradient(to right, #2948ff, #396afc);
+            /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to right, #2948ff, #396afc);
+            /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+        }
+        /* Custom Editor.md theme css example */
+        /*
+            .editormd-theme-dark {
+                border-color: #1a1a17;
+                
+            }
+            
+            .editormd-theme-dark .editormd-toolbar {
+                background: #1A1A17;
+                border-color: #1a1a17;
+            }
+            
+            .editormd-theme-dark .editormd-menu > li > a {
+                color: #777;
+                border-color: #1a1a17;
+            }
+            
+            .editormd-theme-dark .editormd-menu > li.divider {
+                border-right: 1px solid #111;
+            }
+            
+            .editormd-theme-dark .editormd-menu > li > a:hover, .editormd-menu > li > a.active {
+                border-color: #333;
+                background: #333;
+            }*/
+    </style>
+</head>
+
+<body>
+    <div id="layout">
+        <header>
+            <h1>Themes</h1>
+            <p>
+                <select id="editormd-theme-select">
+                    <option selected="selected" value="">select toolbar theme</option>
+                </select>
+                <select id="editor-area-theme-select">
+                    <option selected="selected" value="">select editor area theme</option>
+                </select>
+                <select id="preview-area-theme-select">
+                    <option selected="selected" value="">select preview area theme</option>
+                </select>
+            </p>
+        </header>
+        <div id="test-editormd">
+            <textarea style="display:none;">
+
+
+</textarea>
+        </div>
+    </div>
+    <script src="./src/js/jquery.min.js"></script>
+    <script src="./src/editormd.js"></script>
+    <script type="text/javascript">
+        let testEditor;
+        
+
+        function themeSelect(id, themes, lsKey, callback) {
+            var select = $("#" + id);
+
+            for (var i = 0, len = themes.length; i < len; i++) {
+                var theme = themes[i];
+                var selected = (localStorage[lsKey] == theme) ? " selected=\"selected\"" : "";
+
+                select.append("<option value=\"" + theme + "\"" + selected + ">" + theme + "</option>");
+            }
+
+            select.bind("change", function () {
+                var theme = $(this).val();
+
+                if (theme === "") {
+                    alert("theme == \"\"");
+                    return false;
+                }
+
+                localStorage[lsKey] = theme;
+                callback(select, theme);
+            });
+
+            return select;
+        }
+
+        $(function () {
+            testEditor = editormd("test-editormd", {
+                width: "98%",
+                height: 720,
+                emoji: true,
+
+                // Editor.md theme, default or dark, change at v1.5.0
+                // You can also custom css class .editormd-preview-theme-xxxx
+                theme: (localStorage.theme) ? localStorage.theme : "dark",
+
+                // Preview container theme, added v1.5.0
+                // You can also custom css class .editormd-preview-theme-xxxx
+                previewTheme: (localStorage.previewTheme) ? localStorage.previewTheme : "dark",
+
+                // Added @v1.5.0 & after version is CodeMirror (editor area) theme
+                editorTheme: (localStorage.editorTheme) ? localStorage.editorTheme : "pastel-on-dark",
+                path: './src/lib/'
+            });
+
+
+
+            themeSelect("editormd-theme-select", editormd.themes, "theme", function ($this, theme) {
+                testEditor.setTheme(theme);
+            });
+
+            themeSelect("editor-area-theme-select", editormd.editorThemes, "editorTheme", function ($this, theme) {
+                testEditor.setCodeMirrorTheme(theme);
+                // or testEditor.setEditorTheme(theme);
+            });
+
+            themeSelect("preview-area-theme-select", editormd.previewThemes, "previewTheme", function ($this, theme) {
+                testEditor.setPreviewTheme(theme);
+            });
+
+        });
+    </script>
+</body>
+
+</html>
